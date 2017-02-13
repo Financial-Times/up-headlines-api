@@ -64,6 +64,7 @@ func main() {
 		servicesRouter := mux.NewRouter()
 
 		// Then API specific ones
+		servicesRouter.HandleFunc("/headlines/flash/{uuid}", handler.GetFlashBriefing).Methods("GET")
 		servicesRouter.HandleFunc("/headlines/list/{uuid}", handler.GetListHeadlines).Methods("GET")
 		servicesRouter.HandleFunc("/headlines/concept/{uuid}", handler.GetConceptHeadlines).Methods("GET")
 		servicesRouter.HandleFunc("/headlines", handler.GetHeadlinesByUUID).Methods("POST")

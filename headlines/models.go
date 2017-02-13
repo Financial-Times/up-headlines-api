@@ -25,3 +25,10 @@ type ListItem struct {
 	ID     string `json:"id,omitempty"`
 	APIurl string `json:"apiUrl,omitempty"`
 }
+
+type FlashBriefingItem struct {
+	UUID          string `json:"uid" bson:"uuid"`
+	Title         string `json:"titleText" bson:"title"`
+	Standfirst    string `json:"mainText" bson:"standfirst"`
+	PublishedDate string `json:"updateDate" bson:"publishedDate"`
+}

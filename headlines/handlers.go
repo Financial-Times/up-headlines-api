@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"net/http"
 
+	"github.com/Sirupsen/logrus"
 	"github.com/gorilla/mux"
 )
 
@@ -39,6 +40,8 @@ func (h *handlers) GetHeadlinesByUUID(resp http.ResponseWriter, req *http.Reques
 
 	output, err := h.service.getHeadlinesByUUID(UUIDs.UUIDs)
 
+	logrus.Debugf("GetHeadlinesByUUID: %v", output)
+
 	if len(output) > 0 {
 		enc := json.NewEncoder(resp)
 		err = enc.Encode(output)
@@ -56,6 +59,8 @@ func (h *handlers) GetListHeadlines(resp http.ResponseWriter, req *http.Request)
 
 	output, err := h.service.getHeadlinesByList(UUID)
 
+	logrus.Debugf("GetListHeadlines: %v", output)
+
 	if len(output) > 0 {
 		enc := json.NewEncoder(resp)
 		err = enc.Encode(output)
@@ -66,12 +71,35 @@ func (h *handlers) GetListHeadlines(resp http.ResponseWriter, req *http.Request)
 	}
 
 }
+
+func (h *handlers) GetFlashBriefing(resp http.ResponseWriter, req *http.Request) {
+	resp.Header().Add("Content-Type", "application/json")
+	vars := mux.Vars(req)
+	UUID := vars["uuid"]
+
+	output, err := h.service.getFlashBriefingForList(UUID)
+
+	logrus.Debugf("GetFlashBriefing: %v", output)
+
+	if len(output) > 0 {
+		enc := json.NewEncoder(resp)
+		err = enc.Encode(output)
+		if err != nil {
+			resp.WriteHeader(503)
+			resp.Write([]byte("{\"error\": \"Error creating response\"}"))
+		}
+	}
+
+}
+
 func (h *handlers) GetConceptHeadlines(resp http.ResponseWriter, req *http.Request) {
 	resp.Header().Add("Content-Type", "application/json")
 	vars := mux.Vars(req)
 	UUID := vars["uuid"]
 
 	output, err := h.service.getHeadlinesByConcept(UUID)
+
+	logrus.Debugf("GetConceptHeadlines: %v", output)
 
 	if len(output) > 0 {
 		enc := json.NewEncoder(resp)
