@@ -42,6 +42,13 @@ func (h *handlers) GetHeadlinesByUUID(resp http.ResponseWriter, req *http.Reques
 
 	logrus.Debugf("GetHeadlinesByUUID: %v", output)
 
+	for i, e := range output {
+		if e.UUID == "" {
+			logrus.Debugf("Empty record at position %d, removing", i)
+			output = append(output[:i], output[i+1:]...)
+		}
+	}
+
 	if len(output) > 0 {
 		enc := json.NewEncoder(resp)
 		err = enc.Encode(output)
@@ -60,6 +67,13 @@ func (h *handlers) GetListHeadlines(resp http.ResponseWriter, req *http.Request)
 	output, err := h.service.getHeadlinesByList(UUID)
 
 	logrus.Debugf("GetListHeadlines: %v", output)
+
+	for i, e := range output {
+		if e.UUID == "" {
+			logrus.Debugf("Empty record at position %d, removing", i)
+			output = append(output[:i], output[i+1:]...)
+		}
+	}
 
 	if len(output) > 0 {
 		enc := json.NewEncoder(resp)

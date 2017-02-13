@@ -45,13 +45,25 @@ func NewHeadlineService(connStr string, listURL string, conceptURL string) servi
 func (s *service) getHeadlinesByUUID(UUIDs []string) ([]headlineOutput, error) {
 	c := s.mongoSession.DB(DATABASE).C(COLLECTION)
 
-	result := []headlineOutput{}
+	result := headlineOutput{}
+	output := make([]headlineOutput, len(UUIDs), len(UUIDs))
+	outputOrder := map[string]int{}
 
-	err := c.Find(bson.M{"uuid": bson.M{
+	for i, e := range UUIDs {
+		outputOrder[e] = i
+	}
+
+	iter := c.Find(bson.M{"uuid": bson.M{
 		"$in": UUIDs,
-	}}).Select(bson.M{"_id": 0, "uuid": 1, "title": 1, "standfirst": 1}).All(&result)
+	}}).Select(bson.M{"_id": 0, "uuid": 1, "title": 1, "standfirst": 1}).Iter()
 
-	return result, err
+	for iter.Next(&result) {
+		index := outputOrder[result.UUID]
+		output[index] = result
+	}
+	err := iter.Close()
+
+	return output, err
 }
 
 func (s *service) getHeadlinesByList(listUUID string) ([]headlineOutput, error) {
